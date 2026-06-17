@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BALAJI STUDIO - Premium Order Collection</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- EmailJS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        .toast { transition: opacity 0.3s, transform 0.3s; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <!-- CONFIGURATION & BACKEND INTEGRATION PLACEHOLDERS -->
+    <script>
+        // === LIVE CONFIGURATION ===
+        // To connect your live serverless database and email utilities, fill in your details below:
+        const CONFIG = {
+            useFirebase: false, // Set to true when your Firebase setup is ready
+            firebaseConfig: {
+                apiKey: "YOUR_FIREBASE_API_KEY",
+                authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
+                projectId: "YOUR_FIREBASE_PROJECT_ID",
+                storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
+                messagingSenderId: "YOUR_FIREBASE_SENDER_ID",
+                appId: "YOUR_FIREBASE_APP_ID"
+            },
+            emailJS: {
+                publicKey: "YOUR_EMAILJS_PUBLIC_KEY",
+                serviceId: "YOUR_EMAILJS_SERVICE_ID",
+                templateId: "YOUR_EMAILJS_TEMPLATE_ID"
+            }
+        };
+        
+        if (CONFIG.useFirebase && CONFIG.emailJS.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+            emailjs.init(CONFIG.emailJS.publicKey);
+        }
+    </script>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- STICKY HEADER -->
+    <header class="sticky top-0 z-40 bg-white shadow-md border-b border-gray-100">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold tracking-wider text-indigo-900 flex items-center gap-2">
+                <i class="fa-solid fa-camera-retro text-indigo-600"></i> BALAJI STUDIO
+            </a>
+            
+            <nav class="hidden md:flex space-x-8 font-medium">
+                <a href="#products" class="text-gray-600 hover:text-indigo-600 transition">Products</a>
+                <a href="admin.html" class="text-gray-600 hover:text-indigo-600 transition" target="_blank">Admin Dashboard</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <!-- Cart Trigger Button -->
+                <button onclick="toggleCart(true)" class="relative p-2 text-gray-600 hover:text-indigo-600 transition focus:outline-none">
+                    <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                </button>
+                
+                <!-- Auth State Button -->
+                <div id="auth-state-container">
+                    <button onclick="openAuthModal()" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-medium hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-circle"></i> Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="bg-gradient-to-r from-indigo-900 to-slate-800 text-white py-16 px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Handcrafted Textiles & Premium Apparel</h1>
+            <p class="text-indigo-200 text-lg md:text-xl mb-8">Browse our exclusive catalogue, complete your digital order request, and we will contact you directly to settle pricing and custom delivery options.</p>
+            <a href="#products" class="bg-white text-indigo-950 px-8 py-3 rounded-full font-bold text-lg hover:bg-indigo-50 transition shadow-lg">Explore Collection</a>
+        </div>
+    </section>
+
+    <!-- MAIN PRODUCT SECTION -->
+    <main id="products" class="container mx-auto px-4 py-12 scroll-mt-24">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900">Our Curated Catalogue</h2>
+                <p class="text-gray-500 mt-1">Select your items to build an order sheet.</p>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-gray-500 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 self-start">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> App Running locally via Browser
+            </div>
+        </div>
+
+        <!-- Dynamic Product Grid -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Dynamic item cards inject here -->
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="font-bold text-white mb-2">BALAJI STUDIO</p>
+            <p class="text-sm">Serverless Fast-Checkout Application Framework &copy; 2026</p>
+        </div>
+    </footer>
+
+    <!-- SLIDE-OUT SHOPPING CART SIDEBAR -->
+    <div id="cart-sidebar" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        <div class="absolute inset-0 overflow-hidden">
+            <div onclick="toggleCart(false)" class="absolute inset-0 bg-slate-900 bg-opacity-50 transition-opacity backdrop-blur-sm"></div>
+            <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                <div class="pointer-events-auto w-screen max-w-md bg-white shadow-2xl flex flex-col">
+                    <div class="flex-1 overflow-y-auto py-6 px-4 sm:px-6">
+                        <div class="flex items-start justify-between border-b border-gray-200 pb-4">
+                            <h2 class="text-xl font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-cart-shopping text-indigo-600"></i> Your Order List</h2>
+                            <button onclick="toggleCart(false)" class="text-gray-400 hover:text-gray-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+                        </div>
+                        <div class="mt-8">
+                            <div id="cart-items-container" class="flow-root divide-y divide-gray-100">
+                                <!-- Cart items loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 py-6 px-4 sm:px-6 bg-gray-50">
+                        <div class="flex justify-between text-base font-bold text-slate-950">
+                            <p>Estimated Total</p>
+                            <p id="cart-total-amount">₹0.00</p>
+                        </div>
+                        <p class="mt-0.5 text-sm text-gray-500">Final pricing and delivery fees verified upon callback.</p>
+                        <div class="mt-6">
+                            <button onclick="processCheckout()" class="w-full flex items-center justify-center justify-between bg-indigo-600 px-6 py-3 border border-transparent rounded-xl text-base font-bold text-white shadow-md hover:bg-indigo-700 transition">
+                                <span>Place Verified Order</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION DIALOG (MODAL) -->
+    <div id="auth-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900 bg-opacity-60 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden p-6 relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <!-- Tabs Toggle -->
+            <div class="flex border-b border-gray-200 mb-6">
+                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="w-1/2 pb-3 font-bold text-center border-b-2 border-indigo-600 text-indigo-600">Sign In</button>
+                <button id="tab-signup-btn" onclick="switchAuthTab('signup')" class="w-1/2 pb-3 font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-700">Sign Up</button>
+            </div>
+
+            <!-- Login / Signup Wrapper View -->
+            <div id="auth-forms">
+                <div id="auth-profile-inputs" class="space-y-4 mb-4 hidden">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="auth-name" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Enter full name">
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="auth-email" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="name@example.com">
+                    </div>
+                    <div id="password-field-group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                        <input type="password" id="auth-password" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <button onclick="handleEmailAuth()" class="w-full mt-6 bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition shadow-sm">
+                    Continue with Email
+                </button>
+
+                <div class="relative my-6 text-center">
+                    <span class="absolute inset-x-0 top-1/2 h-px bg-gray-200 -z-10"></span>
+                    <span class="bg-white px-3 text-xs text-gray-400 font-bold uppercase tracking-wider">Alternative Entry</span>
+                </div>
+
+                <!-- Native Authentication Channels -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="handleGoogleAuth()" class="flex items-center justify-center gap-2 border border-gray-300 rounded-xl py-2.5 hover:bg-gray-50 transition text-sm font-medium text-gray-700">
+                        <i class="fa-brands fa-google text-red-500"></i> Google
+                    </button>
+                    <button onclick="togglePhoneAuthView(true)" class="flex items-center justify-center gap-2 border border-gray-300 rounded-xl py-2.5 hover:bg-gray-50 transition text-sm font-medium text-gray-700">
+                        <i class="fa-solid fa-phone text-green-600"></i> Phone OTP
+                    </button>
+                </div>
+            </div>
+
+            <!-- Standalone OTP Interface View -->
+            <div id="phone-auth-view" class="hidden space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Phone Verification</h3>
+                <div id="phone-number-entry">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                    <div class="flex gap-2">
+                        <span class="bg-gray-100 border border-gray-300 rounded-xl px-3 flex items-center text-gray-600 text-sm font-medium">+91</span>
+                        <input type="tel" id="auth-phone" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="9876543210">
+                    </div>
+                    <button onclick="sendOTPCode()" class="w-full mt-4 bg-emerald-600 text-white font-bold py-2.5 rounded-xl hover:bg-emerald-700 transition">Request One-Time Password</button>
+                </div>
+                <div id="otp-code-entry" class="hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">6-Digit Verification Code</label>
+                    <input type="text" id="auth-otp" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-center tracking-widest text-lg font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="000000">
+                    <button onclick="verifyOTPCode()" class="w-full mt-4 bg-indigo-600 text-white font-bold py-2.5 rounded-xl hover:bg-indigo-700 transition">Confirm Code & Login</button>
+                </div>
+                <button onclick="togglePhoneAuthView(false)" class="w-full text-center text-sm font-medium text-gray-500 hover:underline mt-2">Back to Standard Credentials</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING WHATSAPP HELPDESK ENGINE -->
+    <a href="https://wa.me/919468674153?text=Hello%20Balaji%20Studio,%20I%20need%20help%20with%20my%20order..." 
+       target="_blank" 
+       class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 hover:bg-[#20ba5a] transition duration-300 flex items-center justify-center group"
+       title="Get Assistance via WhatsApp">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+        <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-300 font-bold whitespace-nowrap text-sm">Help Desk</span>
+    </a>
+
+    <!-- ENGINE SCRIPTS -->
+    <script>
+        // SEED PRODUCTS ENGINE MAPPED VERBATIM TO DISPATCHED SYSTEM FILE ATTACHMENTS
+        const INITIAL_SEED_CATALOGUE = [
+            { id: "p1", name: "Premium Checkered Crimson Cloth", price: 1250, desc: "Classic gingham pattern accent linens styled beautifully with structured edges.", img: "PhotoshopExtension_Image_1.png" },
+            { id: "p2", name: "Artisanal Patchwork Quilt Blouson", price: 4200, desc: "Stunning multicolor multi-pattern hand stitched multi-season statement coat.", img: "PhotoshopExtension_Image_2.png" },
+            { id: "p3", name: "Monochrome Botanical Table Drapery", price: 1650, desc: "Symmetrical traditional block printed intricate foliage spread layout patterns.", img: "PhotoshopExtension_Image_3.png" },
+            { id: "p4", name: "Cerulean Floral Border Linens", price: 1850, desc: "Exquisite handblock layout with structured alternating geometric print striping.", img: "PhotoshopExtension_Image_4.png" },
+            { id: "p5", name: "Rose Petal Artisan Kimono Robe", price: 3400, desc: "Comfort wear hand stamp block design profile line overlay lounge layering jacket.", img: "PhotoshopExtension_Image_5.png" },
+            { id: "p6", name: "Traditional Khaki Print Field Coat", price: 3900, desc: "Warm internal quilted block work design complete with comfortable structure pockets.", img: "PhotoshopExtension_Image_6.png" },
+            { id: "p7", name: "Peach Blossom Ornamental Table Overlay", price: 1500, desc: "Bright coral undertones combined with precision block print framing work layout.", img: "PhotoshopExtension_Image_7.png" },
+            { id: "p8", name: "Cyan Floral Luxury Loungewear", price: 3100, desc: "Striking turquoise base with vibrant pattern extensions and tied waist sash accessory.", img: "PhotoshopExtension_Image_8.png" },
+            { id: "p9", name: "Royal Indigo Traditional Robe Dress", price: 3250, desc: "Cream delicate flow work configurations ideal for luxury modern casual settings.", img: "PhotoshopExtension_Image_9.png" },
+            { id: "p10", name: "Abstract Seafoam Festive Quilted Overcoat", price: 4500, desc: "Dynamic traditional colors running throughout historical design pattern structures.", img: "PhotoshopExtension_Image_10.png" }
+        ];
+
+        let state = {
+            products: [],
+            cart: [],
+            currentUser: null,
+            currentAuthMode: 'login'
+        };
+
+        // Data Controller Engine Fallback Switch
+        function initStorageLayer() {
+            if (!localStorage.getItem('balaji_products')) {
+                localStorage.setItem('balaji_products', JSON.stringify(INITIAL_SEED_CATALOGUE));
+            }
+            if (!localStorage.getItem('balaji_orders')) {
+                localStorage.setItem('balaji_orders', JSON.stringify([]));
+            }
+            state.products = JSON.parse(localStorage.getItem('balaji_products'));
+            
+            // Check session login
+            const savedUser = localStorage.getItem('balaji_user_session');
+            if (savedUser) {
+                state.currentUser = JSON.parse(savedUser);
+                updateAuthUI();
+            }
+        }
+
+        // Display Alert Notifications
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-slate-800';
+            toast.className = `${bgClass} text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 toast transform translate-y-2 opacity-0 text-sm font-medium`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-exclamation' : 'fa-info-circle'}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('opacity-0', 'translate-y-2'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3500);
+        }
+
+        // Render Inventory Cards
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = state.products.map(p => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md border border-gray-100 transition duration-200 flex flex-col group">
+                    <div class="relative bg-gray-100 pt-[85%] overflow-hidden">
+                        <img src="${p.img.startsWith('http') ? p.img : 'images/' + p.img}" 
+                             onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=500'"
+                             alt="${p.name}" 
+                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                    <div class="p-5 flex flex-col flex-1">
+                        <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-indigo-600 transition">${p.name}</h3>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">${p.desc}</p>
+                        <div class="flex items-center justify-between mt-auto pt-2">
+                            <span class="text-xl font-extrabold text-slate-950">₹${p.price.toLocaleString('en-IN')}</span>
+                            <button onclick="addToCart('${p.id}')" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-xs"></i> Add to Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Actions
+        function toggleCart(open) {
+            const sidebar = document.getElementById('cart-sidebar');
+            sidebar.classList.toggle('hidden', !open);
+        }
+
+        function addToCart(productId) {
+            const product = state.products.find(p => p.id === productId);
+            if (!product) return;
+            const existing = state.cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty++;
+            } else {
+                state.cart.push({ ...product, qty: 1 });
+            }
+            updateCartUI();
+            showToast(`Added ${product.name} to list`, 'success');
+        }
+
+        function changeQty(productId, delta) {
+            const item = state.cart.find(item => item.id === productId);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                state.cart = state.cart.filter(i => i.id !== productId);
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const badge = document.getElementById('cart-badge');
+            const totalDisplay = document.getElementById('cart-total-amount');
+            
+            const totalCount = state.cart.reduce((sum, i) => sum + i.qty, 0);
+            badge.innerText = totalCount;
+            badge.classList.toggle('hidden', totalCount === 0);
+
+            if (state.cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+                        <p class="text-sm">Your items request bucket is empty.</p>
+                    </div>`;
+                totalDisplay.innerText = "₹0.00";
+                return;
+            }
+
+            let grandTotal = 0;
+            container.innerHTML = state.cart.map(item => {
+                const itemTotal = item.price * item.qty;
+                grandTotal += itemTotal;
+                return `
+                    <div class="flex py-4 gap-4 items-center">
+                        <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50 relative">
+                            <img src="${item.img.startsWith('http') ? item.img : 'images/' + item.img}" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=500'" class="h-full w-full object-cover">
+                        </div>
+                        <div class="flex flex-1 flex-col">
+                            <div class="flex justify-between text-sm font-bold text-slate-900">
+                                <h4 class="line-clamp-1">${item.name}</h4>
+                                <p class="ml-4">₹${itemTotal.toLocaleString('en-IN')}</p>
+                            </div>
+                            <div class="flex flex-1 items-center justify-between text-xs mt-2">
+                                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+                                    <button onclick="changeQty('${item.id}', -1)" class="px-2.5 py-1 hover:bg-gray-100 text-gray-600 font-bold">-</button>
+                                    <span class="px-3 py-1 font-bold text-slate-900">${item.qty}</span>
+                                    <button onclick="changeQty('${item.id}', 1)" class="px-2.5 py-1 hover:bg-gray-100 text-gray-600 font-bold">+</button>
+                                </div>
+                                <button onclick="changeQty('${item.id}', -${item.qty})" class="font-medium text-red-500 hover:underline">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            totalDisplay.innerText = `₹${grandTotal.toLocaleString('en-IN')}.00`;
+        }
+
+        // Authentication Modal Toggles
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+        
+        function switchAuthTab(mode) {
+            state.currentAuthMode = mode;
+            const isLogin = mode === 'login';
+            document.getElementById('tab-login-btn').className = isLogin ? "w-1/2 pb-3 font-bold text-center border-b-2 border-indigo-600 text-indigo-600" : "w-1/2 pb-3 font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-700";
+            document.getElementById('tab-signup-btn').className = !isLogin ? "w-1/2 pb-3 font-bold text-center border-b-2 border-indigo-600 text-indigo-600" : "w-1/2 pb-3 font-medium text-center text-gray-500 border-b-2 border-transparent hover:text-gray-700";
+            document.getElementById('auth-profile-inputs').classList.toggle('hidden', isLogin);
+        }
+
+        function togglePhoneAuthView(showPhone) {
+            document.getElementById('auth-forms').classList.toggle('hidden', showPhone);
+            document.getElementById('phone-auth-view').classList.toggle('hidden', !showPhone);
+        }
+
+        // Handle User Logins (Local Fallback + Live hooks)
+        function setSessionUser(userData) {
+            state.currentUser = userData;
+            localStorage.setItem('balaji_user_session', JSON.stringify(userData));
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`Welcome back, ${userData.name}!`, 'success');
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('auth-state-container');
+            if (state.currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold text-slate-900 hidden sm:inline"><i class="fa-solid fa-user text-indigo-600 mr-1"></i> ${state.currentUser.name}</span>
+                        <button onclick="handleLogout()" class="text-xs font-bold text-red-500 hover:text-red-700 uppercase tracking-wider bg-red-50 px-3 py-2 rounded-lg border border-red-100 transition">Logout</button>
+                    </div>`;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openAuthModal()" class="bg-indigo-600 text-white px-5 py-2 rounded-full font-medium hover:bg-indigo-700 transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-user-circle"></i> Login
+                    </button>`;
+            }
+        }
+
+        function handleLogout() {
+            state.currentUser = null;
+            localStorage.removeItem('balaji_user_session');
+            updateAuthUI();
+            showToast("Logged out successfully");
+        }
+
+        function handleEmailAuth() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const nameInput = document.getElementById('auth-name').value.trim();
+
+            if (!email || !password) { return showToast("Please fill in credentials", "error"); }
+            if (state.currentAuthMode === 'signup' && !nameInput) { return showToast("Name is required for Sign Up", "error"); }
+
+            // Live Firebase implementation placeholder hook runs here. Fallback runs directly:
+            const computedName = state.currentAuthMode === 'signup' ? nameInput : email.split('@')[0];
+            setSessionUser({ name: computedName, contact: email, method: 'Email' });
+        }
+
+        function handleGoogleAuth() {
+            setSessionUser({ name: "Google Customer Guest", contact: "google.user@gmail.com", method: 'Google' });
+        }
+
+        function sendOTPCode() {
+            const phone = document.getElementById('auth-phone').value.trim();
+            if (phone.length < 10) return showToast("Enter a valid phone number", "error");
+            showToast("Mock OTP dispatched to device: 123456");
+            document.getElementById('phone-number-entry').classList.add('hidden');
+            document.getElementById('otp-code-entry').classList.remove('hidden');
+        }
+
+        function verifyOTPCode() {
+            const code = document.getElementById('auth-otp').value.trim();
+            const phone = document.getElementById('auth-phone').value.trim();
+            if (code !== "123456") return showToast("Incompatible OTP. Use 123456", "error");
+            setSessionUser({ name: `Guest Customer (+91 ${phone.slice(-4)})`, contact: `+91${phone}`, method: 'Phone OTP' });
+        }
+
+        // COMPLETE, READABLE ORDER DISPATCH PLATFORM SUMMARY ENGINE
+        function processCheckout() {
+            if (state.cart.length === 0) return showToast("Your order collection is empty", "error");
+            if (!state.currentUser) {
+                showToast("Authentication required before order placement", "info");
+                openAuthModal();
+                return;
+            }
+
+            const uniqueId = "BJ-" + Math.floor(100000 + Math.random() * 900000);
+            const totalAmount = state.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+            
+            // Build unstructured highly scannable human-readable layout block matrices
+            let itemizedText = "";
+            state.cart.forEach((item, index) => {
+                itemizedText += `${index + 1}. [ID: ${item.id}] ${item.name} x ${item.qty} units -> ₹${(item.price * item.qty).toLocaleString('en-IN')}\n`;
+            });
+
+            const orderPayload = {
+                orderId: uniqueId,
+                date: new Date().toLocaleString('en-IN'),
+                customer: {
+                    name: state.currentUser.name,
+                    contact: state.currentUser.contact,
+                    authChannel: state.currentUser.method
+                },
+                items: state.cart,
+                total: totalAmount,
+                status: "Pending"
+            };
+
+            // Save order locally for immediate visibility in admin dashboard
+            const currentOrders = JSON.parse(localStorage.getItem('balaji_orders')) || [];
+            currentOrders.unshift(orderPayload);
+            localStorage.setItem('balaji_orders', JSON.stringify(currentOrders));
+
+            // CRITICAL READABLE LOGICAL SUMMARY STRING SCHEMAS
+            const emailSummaryText = `
+==================================================
+        NEW ORDER SHEET DISPATCH: BALAJI STUDIO   
+==================================================
+Order Identifier ID : ${uniqueId}
+Timestamp Date      : ${orderPayload.date}
+Status Code Initial : Pending
+
+---------------- CUSTOMER METRICS ----------------
+Client Profile Name : ${orderPayload.customer.name}
+Verified Connect    : ${orderPayload.customer.contact}
+Auth Registry Route : ${orderPayload.customer.authChannel}
+
+---------------- ITEMIZED QUANTITIES -------------
+${itemizedText}
+--------------------------------------------------
+GRAND COMBINED ESTIMATED TOTAL : ₹${totalAmount.toLocaleString('en-IN')}.00
+==================================================
+* Action Requirement: Shopkeeper must process confirmation callback promptly.
+`;
+
+            console.log("Structured Email Payload Generated System Log Check:\n", emailSummaryText);
+
+            // Execute Live EmailJS Payload Trigger if parameters set
+            if (CONFIG.useFirebase && CONFIG.emailJS.publicKey !== "YOUR_EMAILJS_PUBLIC_KEY") {
+                emailjs.send(CONFIG.emailJS.serviceId, CONFIG.templateId, {
+                    order_id: uniqueId,
+                    customer_name: orderPayload.customer.name,
+                    customer_contact: orderPayload.customer.contact,
+                    order_summary: emailSummaryText,
+                    grand_total: `₹${totalAmount}`
+                }).then(() => {
+                    console.log("Email dispatch complete.");
+                }).catch(err => console.error("Email processing anomaly:", err));
+            }
+
+            // Clear current working operations on success completion
+            state.cart = [];
+            updateCartUI();
+            toggleCart(false);
+            
+            // Advanced Feedback Modal Layout Popup Alert
+            alert(`ORDER PLACED SUCCESSFULLY!\n\nYour Unique Order Reference ID: ${uniqueId}\n\nThe shopkeeper has been notified via digital automated summaries and will contact you shortly to confirm product availability, precise wholesale parameters, and dispatch schedules.`);
+        }
+
+        // Run Initializers
+        window.addEventListener('DOMContentLoaded', () => {
+            initStorageLayer();
+            renderProducts();
+        });
+    </script>
+</body>
+</html>

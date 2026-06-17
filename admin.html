@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BALAJI STUDIO - Admin Workspace Control Center</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased">
+
+    <!-- BLOCK LEVEL ADMIN AUTHENTICATION SCREEN -->
+    <div id="admin-login-lock" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-950">Balaji Studio Administration</h1>
+                <p class="text-sm text-gray-400 mt-1">Provide secure credentials to edit system storefront assets.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Secure Admin Email</label>
+                    <input type="email" id="admin-email" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="admin@balaji.com" value="admin@balaji.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Access Password</label>
+                    <input type="password" id="admin-password" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="••••••••" value="123456">
+                </div>
+                <button onclick="attemptAdminAccess()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition shadow-md">
+                    Unlock Workspace Dashboard
+                </button>
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-6">Default Test Setup: admin@balaji.com / 123456</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTROL CENTER INTERFACE WORKSPACE CONTAINER -->
+    <div id="admin-dashboard" class="hidden min-h-screen flex flex-col">
+        <!-- Top Workspace Bar -->
+        <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <span class="bg-indigo-900 text-white font-bold px-3 py-1 rounded-lg text-sm tracking-wider">WORKSPACE Control</span>
+                    <h2 class="text-xl font-bold text-slate-900">BALAJI STUDIO</h2>
+                </div>
+                <button onclick="terminateAdminSession()" class="text-sm font-bold text-red-500 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl border border-red-200 transition flex items-center gap-2">
+                    <i class="fa-solid fa-power-off text-xs"></i> Lock Dashboard
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Admin Core Views Grid Frame -->
+        <main class="container mx-auto px-4 py-8 flex-1 space-y-8">
+            
+            <!-- ANALYTICS KPI SUMMARY MATRIX -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Gross Requested Values</p>
+                        <h3 id="stat-revenue" class="text-2xl font-black text-slate-950 mt-1">₹0.00</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-wallet"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Orders Logged</p>
+                        <h3 id="stat-orders" class="text-2xl font-black text-slate-950 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-box-archive"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Inventory Catalogue</p>
+                        <h3 id="stat-products" class="text-2xl font-black text-slate-950 mt-1">0 Items</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-boxes-stacked"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Top Dispatch Focus</p>
+                        <h3 id="stat-top-item" class="text-sm font-bold text-slate-900 mt-1 line-clamp-2">No patterns requested yet</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-fire"></i></div>
+                </div>
+            </section>
+
+            <!-- SPLIT WINDOW PANELS: CRUD PRODUCTION FORM & LIVE DATA GRID PANELS -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                
+                <!-- MANAGEMENT PRODUCTION FORM SHEET COMPONENT -->
+                <section class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4 lg:col-span-1">
+                    <h3 id="form-action-title" class="text-lg font-bold text-slate-950 border-b border-gray-100 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Studio Product
+                    </h3>
+                    
+                    <input type="hidden" id="crud-idx-id">
+                    
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-1">Product Title Name</label>
+                            <input type="text" id="crud-name" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. Classic Silk Robe Piece">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-1">Base Retailing Price (INR ₹)</label>
+                            <input type="number" id="crud-price" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. 1500">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-1">Local Relative Image File Path (Filename Reference)</label>
+                            <input type="text" id="crud-img" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. PhotoshopExtension_Image_1.png">
+                            <p class="text-[11px] text-gray-400 mt-1">Matches the filenames of your uploaded images inside the asset subdirectory.</p>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-700 mb-1">Item Narrative Descriptions</label>
+                            <textarea id="crud-desc" rows="3" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Detail weaving patterns, fabric variants, sizing specifications..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="executeProductFormAction()" id="form-submit-btn" class="flex-1 bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-indigo-700 transition shadow-sm">
+                            Save Item Asset
+                        </button>
+                        <button onclick="resetCrudFormState()" id="form-cancel-btn" class="bg-gray-100 text-gray-600 font-semibold px-4 py-2.5 rounded-xl text-sm hover:bg-gray-200 transition hidden">
+                            Cancel
+                        </button>
+                    </div>
+                </section>
+
+                <!-- INVENTORY CONTROL DATA TABLE -->
+                <section class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden lg:col-span-2">
+                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <h3 class="text-base font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-600"></i> Storefront Inventory Feed</h3>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-100 text-indigo-800 rounded-full">Real-time Sync Enabled</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-500 font-semibold border-b border-gray-200">
+                                    <th class="p-4">Visual asset</th>
+                                    <th class="p-4">Product Details</th>
+                                    <th class="p-4">Base Cost</th>
+                                    <th class="p-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-rows" class="divide-y divide-gray-100">
+                                <!-- Inventory items render here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- COMPREHENSIVE CUSTOMER ORDER LIST SHEET CONTROLLERS -->
+            <section class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <h3 class="text-lg font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-receipt text-indigo-600"></i> Operational Order Matrix</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Review system inquiries, contact client channels directly to confirm allocations, and finalize status values.</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-500 font-semibold border-b border-gray-200">
+                                <th class="p-4">ID / Registration Time</th>
+                                <th class="p-4">Customer Details</th>
+                                <th class="p-4">Item Matrix Configuration Requests</th>
+                                <th class="p-4">Financial Sums</th>
+                                <th class="p-4">Status Flag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-rows" class="divide-y divide-gray-100">
+                            <!-- Orders lists inject here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- SCRIPT INFRASTRUCTURE HANDLERS -->
+    <script>
+        let adminState = {
+            products: [],
+            orders: []
+        };
+
+        function attemptAdminAccess() {
+            const e = document.getElementById('admin-email').value;
+            const p = document.getElementById('admin-password').value;
+            
+            // Standard single shopkeeper credential checks
+            if(e === "admin@balaji.com" && p === "123456") {
+                document.getElementById('admin-login-lock').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                refreshWorkspaceData();
+            } else {
+                alert("Unauthorized credential structures entered.");
+            }
+        }
+
+        function terminateAdminSession() {
+            document.getElementById('admin-login-lock').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+        }
+
+        function refreshWorkspaceData() {
+            adminState.products = JSON.parse(localStorage.getItem('balaji_products')) || [];
+            adminState.orders = JSON.parse(localStorage.getItem('balaji_orders')) || [];
+            
+            computeAnalyticsMetrics();
+            renderInventoryTable();
+            renderOrdersTable();
+        }
+
+        function computeAnalyticsMetrics() {
+            const totalRev = adminState.orders.reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('stat-revenue').innerText = `₹${totalRev.toLocaleString('en-IN')}.00`;
+            document.getElementById('stat-orders').innerText = adminState.orders.length;
+            document.getElementById('stat-products').innerText = `${adminState.products.length} Items`;
+
+            // Calculate item frequencies
+            let frequencies = {};
+            adminState.orders.forEach(o => {
+                o.items.forEach(i => { frequencies[i.name] = (frequencies[i.name] || 0) + i.qty; });
+            });
+            let topItem = "No patterns requested yet";
+            let maxCount = 0;
+            for(let key in frequencies) {
+                if(frequencies[key] > maxCount) { maxCount = frequencies[key]; topItem = `${key} (${maxCount} units)`; }
+            }
+            document.getElementById('stat-top-item').innerText = topItem;
+        }
+
+        function renderInventoryTable() {
+            const container = document.getElementById('inventory-table-rows');
+            if(adminState.products.length === 0) {
+                container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400">No active assets detected inside store config schemas.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = adminState.products.map(p => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4">
+                        <div class="h-12 w-12 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 relative">
+                            <img src="${p.img.startsWith('http') ? p.img : 'images/' + p.img}" onerror="this.src='https://images.unsplash.com/photo-1544816155-12df9643f363?w=100'" class="w-full h-full object-cover">
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        <p class="font-bold text-slate-900">${p.name}</p>
+                        <p class="text-xs text-gray-400 line-clamp-1">${p.desc}</p>
+                        <p class="text-[10px] text-gray-500 font-mono mt-0.5">Path: ${p.img}</p>
+                    </td>
+                    <td class="p-4 font-bold text-slate-950">₹${p.price.toLocaleString('en-IN')}</td>
+                    <td class="p-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="setProductToEdit('${p.id}')" class="text-indigo-600 hover:bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100 transition text-xs font-bold" title="Edit Item parameters"><i class="fa-solid fa-pen"></i> Edit</button>
+                            <button onclick="deleteProductAsset('${p.id}')" class="text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100 transition text-xs font-bold" title="Delete Asset from Grid"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderOrdersTable() {
+            const container = document.getElementById('orders-table-rows');
+            if(adminState.orders.length === 0) {
+                container.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-400">No customer purchase matrices submitted yet.</td></tr>`;
+                return;
+            }
+
+            container.innerHTML = adminState.orders.map(o => {
+                const itemStringSummary = o.items.map(i => `<span class="inline-block bg-slate-100 border border-slate-200 text-slate-800 text-xs px-2 py-0.5 rounded-md font-medium mb-1 mr-1">${i.name} <strong>(x${i.qty})</strong></span>`).join('');
+                
+                return `
+                    <tr class="hover:bg-gray-50 transition align-top">
+                        <td class="p-4 font-mono text-xs">
+                            <p class="font-bold text-indigo-600 text-sm">${o.orderId}</p>
+                            <p class="text-gray-400 mt-1">${o.date}</p>
+                        </td>
+                        <td class="p-4">
+                            <p class="font-bold text-slate-900">${o.customer.name}</p>
+                            <p class="text-xs text-gray-500 font-mono mt-0.5">${o.customer.contact}</p>
+                            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-gray-200 text-gray-600 mt-1 inline-block">${o.customer.authChannel}</span>
+                        </td>
+                        <td class="p-4 max-w-xs">${itemStringSummary}</td>
+                        <td class="p-4 font-black text-slate-950 text-base">₹${o.total.toLocaleString('en-IN')}.00</td>
+                        <td class="p-4">
+                            <select onchange="updateOrderStatusFlag('${o.orderId}', this.value)" class="border border-gray-300 rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none bg-white ${o.status === 'Completed' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' : o.status === 'Pending' ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-indigo-600'}">
+                                <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending Verification</option>
+                                <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed Available</option>
+                                <option value="Out for Delivery" ${o.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+                                <option value="Completed" ${o.status === 'Completed' ? 'selected' : ''}>Completed & Dispatched</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // CRUD INTERFACE FUNCTIONALITIES
+        function executeProductFormAction() {
+            const id = document.getElementById('crud-idx-id').value;
+            const name = document.getElementById('crud-name').value.trim();
+            const price = parseFloat(document.getElementById('crud-price').value);
+            const img = document.getElementById('crud-img').value.trim();
+            const desc = document.getElementById('crud-desc').value.trim();
+
+            if(!name || isNaN(price) || !img || !desc) {
+                alert("Please satisfy all field metadata configuration requirements before storage execution.");
+                return;
+            }
+
+            if(id) {
+                // Update Path Action
+                const index = adminState.products.findIndex(p => p.id === id);
+                if(index !== -1) {
+                    adminState.products[index] = { id, name, price, img, desc };
+                }
+            } else {
+                // Creation Action Path
+                const newId = "p-" + Date.now();
+                adminState.products.push({ id: newId, name, price, img, desc });
+            }
+
+            localStorage.setItem('balaji_products', JSON.stringify(adminState.products));
+            resetCrudFormState();
+            refreshWorkspaceData();
+        }
+
+        function setProductToEdit(id) {
+            const prod = adminState.products.find(p => p.id === id);
+            if(!prod) return;
+
+            document.getElementById('crud-idx-id').value = prod.id;
+            document.getElementById('crud-name').value = prod.name;
+            document.getElementById('crud-price').value = prod.price;
+            document.getElementById('crud-img').value = prod.img;
+            document.getElementById('crud-desc').value = prod.desc;
+
+            document.getElementById('form-action-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500"></i> Modify Product Parameters`;
+            document.getElementById('form-submit-btn').innerText = "Update Storefront Asset";
+            document.getElementById('form-cancel-btn').classList.remove('hidden');
+        }
+
+        function deleteProductAsset(id) {
+            if(confirm("Confirm asset termination? This inventory node will instantly vanish from customer views.")) {
+                adminState.products = adminState.products.filter(p => p.id !== id);
+                localStorage.setItem('balaji_products', JSON.stringify(adminState.products));
+                refreshWorkspaceData();
+            }
+        }
+
+        function resetCrudFormState() {
+            document.getElementById('crud-idx-id').value = "";
+            document.getElementById('crud-name').value = "";
+            document.getElementById('crud-price').value = "";
+            document.getElementById('crud-img').value = "";
+            document.getElementById('crud-desc').value = "";
+
+            document.getElementById('form-action-title').innerHTML = `<i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Studio Product`;
+            document.getElementById('form-submit-btn').innerText = "Save Item Asset";
+            document.getElementById('form-cancel-btn').classList.add('hidden');
+        }
+
+        function updateOrderStatusFlag(orderId, newStatus) {
+            const orders = JSON.parse(localStorage.getItem('balaji_orders')) || [];
+            const target = orders.find(o => o.orderId === orderId);
+            if(target) {
+                target.status = newStatus;
+                localStorage.setItem('balaji_orders', JSON.stringify(orders));
+                refreshWorkspaceData();
+            }
+        }
+    </script>
+</body>
+</html>
