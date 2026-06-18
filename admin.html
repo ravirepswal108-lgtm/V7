@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BALAJI STUDIO - Admin Workspace Control Center</title>
+    <title>BALAJI STUDIO - Admin Control Center</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN for Icons -->
@@ -11,7 +11,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased">
 
-    <!-- BLOCK LEVEL ADMIN AUTHENTICATION SCREEN -->
+    <!-- ADMIN LOGIN PROTECTION FRAME -->
     <div id="admin-login-lock" class="fixed inset-0 z-50 bg-slate-900 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full p-8 shadow-2xl">
             <div class="text-center mb-6">
@@ -19,48 +19,47 @@
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <h1 class="text-2xl font-bold text-slate-950">Balaji Studio Administration</h1>
-                <p class="text-sm text-gray-400 mt-1">Provide secure credentials to edit system storefront assets.</p>
+                <p class="text-sm text-gray-400 mt-1">Provide credentials to manage items and view incoming orders.</p>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Secure Admin Email</label>
-                    <input type="email" id="admin-email" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="admin@balaji.com" value="admin@balaji.com">
+                    <input type="email" id="admin-email" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" value="admin@balaji.com">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Access Password</label>
-                    <input type="password" id="admin-password" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="••••••••" value="123456">
+                    <input type="password" id="admin-password" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 focus:outline-none" value="123456">
                 </div>
                 <button onclick="attemptAdminAccess()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition shadow-md">
                     Unlock Workspace Dashboard
                 </button>
             </div>
-            <p class="text-center text-xs text-gray-400 mt-6">Default Test Setup: admin@balaji.com / 123456</p>
+            <p class="text-center text-xs text-gray-400 mt-6">Default Master Config: admin@balaji.com / 123456</p>
         </div>
     </div>
 
-    <!-- MAIN CONTROL CENTER INTERFACE WORKSPACE CONTAINER -->
+    <!-- MAIN CONTROL CENTER INTERFACE WORKSPACE -->
     <div id="admin-dashboard" class="hidden min-h-screen flex flex-col">
-        <!-- Top Workspace Bar -->
         <header class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <div class="flex items-center gap-3">
-                    <span class="bg-indigo-900 text-white font-bold px-3 py-1 rounded-lg text-sm tracking-wider">WORKSPACE Control</span>
-                    <h2 class="text-xl font-bold text-slate-900">BALAJI STUDIO</h2>
+                    <span class="bg-indigo-900 text-white font-bold px-3 py-1 rounded-lg text-sm tracking-wider">MANAGEMENT</span>
+                    <h2 class="text-xl font-bold text-slate-900">BALAJI STUDIO CONTROL PANEL</h2>
                 </div>
                 <button onclick="terminateAdminSession()" class="text-sm font-bold text-red-500 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl border border-red-200 transition flex items-center gap-2">
-                    <i class="fa-solid fa-power-off text-xs"></i> Lock Dashboard
+                    <i class="fa-solid fa-power-off text-xs"></i> Lock Workspace
                 </button>
             </div>
         </header>
 
-        <!-- Dynamic Admin Core Views Grid Frame -->
+        <!-- Main Content -->
         <main class="container mx-auto px-4 py-8 flex-1 space-y-8">
             
-            <!-- ANALYTICS KPI SUMMARY MATRIX -->
+            <!-- ANALYTICS PANEL -->
             <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Gross Requested Values</p>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Gross Values Requested</p>
                         <h3 id="stat-revenue" class="text-2xl font-black text-slate-950 mt-1">₹0.00</h3>
                     </div>
                     <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-wallet"></i></div>
@@ -81,20 +80,20 @@
                 </div>
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Top Dispatch Focus</p>
-                        <h3 id="stat-top-item" class="text-sm font-bold text-slate-900 mt-1 line-clamp-2">No patterns requested yet</h3>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Top Collection Focus</p>
+                        <h3 id="stat-top-item" class="text-sm font-bold text-slate-900 mt-1 line-clamp-2">No items requested</h3>
                     </div>
                     <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-fire"></i></div>
                 </div>
             </section>
 
-            <!-- SPLIT WINDOW PANELS: CRUD PRODUCTION FORM & LIVE DATA GRID PANELS -->
+            <!-- SPLIT SCREEN: CRUD MANAGER FORM & LIVE INVENTORY FEED -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 
-                <!-- MANAGEMENT PRODUCTION FORM SHEET COMPONENT -->
+                <!-- PRODUCT CREATION / EDIT SHUTTLE PANEL -->
                 <section class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4 lg:col-span-1">
                     <h3 id="form-action-title" class="text-lg font-bold text-slate-950 border-b border-gray-100 pb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Studio Product
+                        <i class="fa-solid fa-circle-plus text-indigo-600"></i> Manage Catalog Items
                     </h3>
                     
                     <input type="hidden" id="crud-idx-id">
@@ -102,20 +101,19 @@
                     <div class="space-y-3 text-sm">
                         <div>
                             <label class="block font-semibold text-gray-700 mb-1">Product Title Name</label>
-                            <input type="text" id="crud-name" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. Classic Silk Robe Piece">
+                            <input type="text" id="crud-name" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. Silk Table Runner">
                         </div>
                         <div>
                             <label class="block font-semibold text-gray-700 mb-1">Base Retailing Price (INR ₹)</label>
                             <input type="number" id="crud-price" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. 1500">
                         </div>
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Local Relative Image File Path (Filename Reference)</label>
+                            <label class="block font-semibold text-gray-700 mb-1">Image Filename Reference</label>
                             <input type="text" id="crud-img" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="e.g. PhotoshopExtension_Image_1.png">
-                            <p class="text-[11px] text-gray-400 mt-1">Matches the filenames of your uploaded images inside the asset subdirectory.</p>
                         </div>
                         <div>
-                            <label class="block font-semibold text-gray-700 mb-1">Item Narrative Descriptions</label>
-                            <textarea id="crud-desc" rows="3" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Detail weaving patterns, fabric variants, sizing specifications..."></textarea>
+                            <label class="block font-semibold text-gray-700 mb-1">Product Description</label>
+                            <textarea id="crud-desc" rows="3" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" placeholder="Detail weaving patterns, fabric variants, sizing..."></textarea>
                         </div>
                     </div>
 
@@ -129,49 +127,48 @@
                     </div>
                 </section>
 
-                <!-- INVENTORY CONTROL DATA TABLE -->
+                <!-- LIVE CATALOG DATA FEED CONTAINER -->
                 <section class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden lg:col-span-2">
                     <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                        <h3 class="text-base font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-600"></i> Storefront Inventory Feed</h3>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-100 text-indigo-800 rounded-full">Real-time Sync Enabled</span>
+                        <h3 class="text-base font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-600"></i> Storefront Catalog Feed</h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-sm">
                             <thead>
                                 <tr class="bg-gray-100 text-gray-500 font-semibold border-b border-gray-200">
-                                    <th class="p-4">Visual asset</th>
+                                    <th class="p-4">Visual Asset</th>
                                     <th class="p-4">Product Details</th>
                                     <th class="p-4">Base Cost</th>
                                     <th class="p-4 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="inventory-table-rows" class="divide-y divide-gray-100">
-                                <!-- Inventory items render here -->
+                                <!-- Loaded dynamically via localStorage -->
                             </tbody>
                         </table>
                     </div>
                 </section>
             </div>
 
-            <!-- COMPREHENSIVE CUSTOMER ORDER LIST SHEET CONTROLLERS -->
+            <!-- COMPREHENSIVE CUSTOMER ORDER LIST MATRIX -->
             <section class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                    <h3 class="text-lg font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-receipt text-indigo-600"></i> Operational Order Matrix</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Review system inquiries, contact client channels directly to confirm allocations, and finalize status values.</p>
+                    <h3 class="text-lg font-bold text-slate-950 flex items-center gap-2"><i class="fa-solid fa-receipt text-indigo-600"></i> Operational Order Dashboard</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Review incoming system inquiries, access complete customer metadata profiles, and verify statuses seamlessly.</p>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-gray-100 text-gray-500 font-semibold border-b border-gray-200">
-                                <th class="p-4">ID / Registration Time</th>
-                                <th class="p-4">Customer Details</th>
-                                <th class="p-4">Item Matrix Configuration Requests</th>
-                                <th class="p-4">Financial Sums</th>
-                                <th class="p-4">Status Flag</th>
+                                <th class="p-4">ID / Placement Date</th>
+                                <th class="p-4">Customer Credentials</th>
+                                <th class="p-4">Requested Configurations</th>
+                                <th class="p-4">Grand Total</th>
+                                <th class="p-4">Status Field Action</th>
                             </tr>
                         </thead>
                         <tbody id="orders-table-rows" class="divide-y divide-gray-100">
-                            <!-- Orders lists inject here -->
+                            <!-- Orders lists inject dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -179,7 +176,7 @@
         </main>
     </div>
 
-    <!-- SCRIPT INFRASTRUCTURE HANDLERS -->
+    <!-- CODE SCRIPT INFRASTRUCTURE HANDLERS -->
     <script>
         let adminState = {
             products: [],
@@ -190,13 +187,12 @@
             const e = document.getElementById('admin-email').value;
             const p = document.getElementById('admin-password').value;
             
-            // Standard single shopkeeper credential checks
             if(e === "admin@balaji.com" && p === "123456") {
                 document.getElementById('admin-login-lock').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 refreshWorkspaceData();
             } else {
-                alert("Unauthorized credential structures entered.");
+                alert("Unauthorized credential structures provided.");
             }
         }
 
@@ -208,7 +204,6 @@
         function refreshWorkspaceData() {
             adminState.products = JSON.parse(localStorage.getItem('balaji_products')) || [];
             adminState.orders = JSON.parse(localStorage.getItem('balaji_orders')) || [];
-            
             computeAnalyticsMetrics();
             renderInventoryTable();
             renderOrdersTable();
@@ -220,7 +215,6 @@
             document.getElementById('stat-orders').innerText = adminState.orders.length;
             document.getElementById('stat-products').innerText = `${adminState.products.length} Items`;
 
-            // Calculate item frequencies
             let frequencies = {};
             adminState.orders.forEach(o => {
                 o.items.forEach(i => { frequencies[i.name] = (frequencies[i.name] || 0) + i.qty; });
@@ -236,7 +230,7 @@
         function renderInventoryTable() {
             const container = document.getElementById('inventory-table-rows');
             if(adminState.products.length === 0) {
-                container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400">No active assets detected inside store config schemas.</td></tr>`;
+                container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400">No active assets configured inside the system inventory.</td></tr>`;
                 return;
             }
 
@@ -255,8 +249,8 @@
                     <td class="p-4 font-bold text-slate-950">₹${p.price.toLocaleString('en-IN')}</td>
                     <td class="p-4">
                         <div class="flex items-center justify-center gap-2">
-                            <button onclick="setProductToEdit('${p.id}')" class="text-indigo-600 hover:bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100 transition text-xs font-bold" title="Edit Item parameters"><i class="fa-solid fa-pen"></i> Edit</button>
-                            <button onclick="deleteProductAsset('${p.id}')" class="text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100 transition text-xs font-bold" title="Delete Asset from Grid"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="setProductToEdit('${p.id}')" class="text-indigo-600 hover:bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100 transition text-xs font-bold"><i class="fa-solid fa-pen"></i> Edit</button>
+                            <button onclick="deleteProductAsset('${p.id}')" class="text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100 transition text-xs font-bold"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -299,7 +293,6 @@
             }).join('');
         }
 
-        // CRUD INTERFACE FUNCTIONALITIES
         function executeProductFormAction() {
             const id = document.getElementById('crud-idx-id').value;
             const name = document.getElementById('crud-name').value.trim();
@@ -308,18 +301,14 @@
             const desc = document.getElementById('crud-desc').value.trim();
 
             if(!name || isNaN(price) || !img || !desc) {
-                alert("Please satisfy all field metadata configuration requirements before storage execution.");
+                alert("Please check all inputs before saving.");
                 return;
             }
 
             if(id) {
-                // Update Path Action
                 const index = adminState.products.findIndex(p => p.id === id);
-                if(index !== -1) {
-                    adminState.products[index] = { id, name, price, img, desc };
-                }
+                if(index !== -1) adminState.products[index] = { id, name, price, img, desc };
             } else {
-                // Creation Action Path
                 const newId = "p-" + Date.now();
                 adminState.products.push({ id: newId, name, price, img, desc });
             }
@@ -339,13 +328,13 @@
             document.getElementById('crud-img').value = prod.img;
             document.getElementById('crud-desc').value = prod.desc;
 
-            document.getElementById('form-action-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500"></i> Modify Product Parameters`;
-            document.getElementById('form-submit-btn').innerText = "Update Storefront Asset";
+            document.getElementById('form-action-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500"></i> Modify Product Assets`;
+            document.getElementById('form-submit-btn').innerText = "Update Catalog Product";
             document.getElementById('form-cancel-btn').classList.remove('hidden');
         }
 
         function deleteProductAsset(id) {
-            if(confirm("Confirm asset termination? This inventory node will instantly vanish from customer views.")) {
+            if(confirm("Are you sure you want to delete this catalog item layout node?")) {
                 adminState.products = adminState.products.filter(p => p.id !== id);
                 localStorage.setItem('balaji_products', JSON.stringify(adminState.products));
                 refreshWorkspaceData();
@@ -359,7 +348,7 @@
             document.getElementById('crud-img').value = "";
             document.getElementById('crud-desc').value = "";
 
-            document.getElementById('form-action-title').innerHTML = `<i class="fa-solid fa-circle-plus text-indigo-600"></i> Add New Studio Product`;
+            document.getElementById('form-action-title').innerHTML = `<i class="fa-solid fa-circle-plus text-indigo-600"></i> Manage Catalog Items`;
             document.getElementById('form-submit-btn').innerText = "Save Item Asset";
             document.getElementById('form-cancel-btn').classList.add('hidden');
         }
